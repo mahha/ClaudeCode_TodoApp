@@ -98,6 +98,20 @@ npm run db:migrate:remote
 8. Test preview deployment
 9. Create PR for review
 
+## Quality Checks (CRITICAL)
+
+**After completing ANY task, you MUST run these checks and ensure they ALWAYS pass:**
+
+1. **Type Check**: Run `npm run typecheck` (or `tsc --noEmit`)
+   - Fix all TypeScript type errors before considering task complete
+   - Ensure type safety across the codebase
+
+2. **Lint**: Run `npm run lint`
+   - Fix all linting errors and warnings
+   - Maintain consistent code style and quality
+
+**These checks are MANDATORY** - do not mark tasks as complete until both pass successfully. This ensures code quality and prevents type errors from being introduced.
+
 ## Common Patterns
 
 **Database Queries**: Use parameterized queries to prevent SQL injection
