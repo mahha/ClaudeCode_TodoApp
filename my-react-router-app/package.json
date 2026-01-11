@@ -1,0 +1,41 @@
+{
+	"name": "my-react-router-app",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "react-router build",
+		"cf-typegen": "wrangler types",
+		"deploy": "npm run build && wrangler deploy",
+		"dev": "react-router dev --host",
+		"postinstall": "npm run cf-typegen",
+		"preview": "npm run build && vite preview",
+		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b",
+		"db:create": "wrangler d1 create todo-db",
+		"db:migrate": "wrangler d1 execute todo-db --local --file=./db/migrations/0001_initial_schema.sql",
+		"db:migrate:remote": "wrangler d1 execute todo-db --remote --file=./db/migrations/0001_initial_schema.sql",
+		"db:console": "wrangler d1 execute todo-db --local --command=\"SELECT * FROM todos\"",
+		"db:console:remote": "wrangler d1 execute todo-db --remote --command=\"SELECT * FROM todos\""
+	},
+	"dependencies": {
+		"isbot": "^5.1.31",
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
+		"react-router": "^7.10.0"
+	},
+	"devDependencies": {
+		"@cloudflare/vite-plugin": "^1.13.5",
+		"@cloudflare/workers-types": "^4.20260111.0",
+		"@react-router/dev": "^7.10.0",
+		"@tailwindcss/vite": "^4.1.13",
+		"@types/better-sqlite3": "^7.6.13",
+		"@types/node": "^22",
+		"@types/react": "^19.1.13",
+		"@types/react-dom": "^19.1.9",
+		"better-sqlite3": "^12.6.0",
+		"tailwindcss": "^4.1.13",
+		"typescript": "^5.9.2",
+		"vite": "^7.1.7",
+		"vite-tsconfig-paths": "^5.1.4",
+		"wrangler": "^4.58.0"
+	}
+}
