@@ -37,7 +37,7 @@ const MOCK_TODOS = [
   {
     id: 5,
     title: "Read Book",
-    description: "Chapter 5 pof 'Atomic Habits'",
+    description: "Chapter 5 of 'Atomic Habits'",
     completed: false,
   },
 ];

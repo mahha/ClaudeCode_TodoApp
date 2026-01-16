@@ -44,7 +44,7 @@ describe("Home", () => {
     expect(screen.getByText("Fix kitchen sink")).toBeInTheDocument();
     expect(screen.getByText("1hour of cardio")).toBeInTheDocument();
     expect(
-      screen.getByText("Chapter 5 pof 'Atomic Habits'")
+      screen.getByText("Chapter 5 of 'Atomic Habits'")
     ).toBeInTheDocument();
   });
 

@@ -13,7 +13,7 @@ export function TodoItem({ title, description, completed }: TodoItemProps) {
           type="checkbox"
           checked={completed}
           readOnly
-          className="mt-1 h-5 w-5 rounded border-2 border-black cursor-pointer"
+          className="mt-1 h-5 w-5 rounded border-2 border-black cursor-default"
           aria-label={`Mark "${title}" as ${completed ? 'incomplete' : 'complete'}`}
         />
         <div className="flex-1">
