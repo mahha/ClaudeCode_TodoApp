@@ -1,87 +1,87 @@
-# Cloudflare Workers Deployment Guide
+# Cloudflare Workers デプロイメントガイド
 
-This guide covers deploying the React Router ToDo app to Cloudflare Workers.
+このガイドでは、React Router ToDo アプリを Cloudflare Workers にデプロイする方法を説明します。
 
-## Prerequisites
+## 前提条件
 
-Before deploying, ensure you have:
+デプロイを開始する前に、以下を確認してください：
 
-1. **Cloudflare Account**: Sign up at https://dash.cloudflare.com/sign-up
-2. **Node.js and npm**: Already installed (verified by running `node --version`)
-3. **Project Built**: Run `npm run build` to verify the project builds successfully
+1. **Cloudflare アカウント**: https://dash.cloudflare.com/sign-up でサインアップ
+2. **Node.js と npm**: インストール済み（`node --version` で確認）
+3. **プロジェクトのビルド**: `npm run build` を実行してビルドが成功することを確認
 
-## Deployment Steps
+## デプロイ手順
 
-### Step 1: Verify Build and Type Checking
+### ステップ1: ビルドと型チェックの確認
 
-Before deploying, ensure the project is ready:
+デプロイ前に、プロジェクトが正常にビルドできることを確認します：
 
 ```bash
-# Build the project
+# プロジェクトをビルド
 npm run build
 
-# Run type checking
+# 型チェックを実行
 npm run typecheck
 ```
 
-Both commands should complete without errors.
+両方のコマンドがエラーなく完了することを確認してください。
 
-### Step 2: Authenticate with Cloudflare
+### ステップ2: Cloudflare での認証
 
-You have two options for authentication:
+認証方法は2つあります：
 
-#### Option A: Interactive Login (Recommended)
+#### オプションA: インタラクティブログイン（推奨）
 
 ```bash
 npx wrangler login
 ```
 
-This will:
-- Open your browser automatically
-- Prompt you to log in to Cloudflare
-- Display "Successfully logged in" message in the browser
-- Request permission for Wrangler to access your account
-- Store authentication credentials locally in `~/.config/.wrangler/config/default.toml`
+このコマンドは以下を行います：
+- ブラウザを自動的に開く
+- Cloudflare へのログインを促す
+- ブラウザに "Successfully logged in" メッセージを表示
+- Wrangler があなたのアカウントにアクセスする許可をリクエスト
+- 認証情報を `~/.config/.wrangler/config/default.toml` にローカル保存
 
-**No API token setup is required with this method.**
+**この方法では API トークンの設定は不要です。**
 
-**Verify authentication**:
+**認証の確認**:
 ```bash
 npx wrangler whoami
 ```
 
-This should display your account information and token permissions.
+このコマンドで、アカウント情報とトークンのアクセス権限が表示されます。
 
-**Note for devcontainer users**: Authentication works seamlessly in devcontainer environments. The `~/.config/.wrangler/` directory persists within the container, so you only need to authenticate once.
+**devcontainer ユーザーへの注意**: devcontainer 環境でも認証はシームレスに動作します。`~/.config/.wrangler/` ディレクトリはコンテナ内で永続化されるため、認証は一度だけ行えば済みます。
 
-#### Option B: API Token (Advanced)
+#### オプションB: API トークン（上級者向け）
 
-If you prefer using an API token:
+API トークンを使用する場合：
 
-1. Go to https://dash.cloudflare.com/profile/api-tokens
-2. Create a new token with "Edit Cloudflare Workers" permissions
-3. Set the environment variable:
+1. https://dash.cloudflare.com/profile/api-tokens にアクセス
+2. "Edit Cloudflare Workers" 権限を持つ新しいトークンを作成
+3. 環境変数を設定：
 
 ```bash
 export CLOUDFLARE_API_TOKEN="your-api-token-here"
 ```
 
-**Important**: Never commit API tokens to version control.
+**重要**: API トークンを Git にコミットしないでください。
 
-### Step 3: Deploy to Cloudflare Workers
+### ステップ3: Cloudflare Workers へのデプロイ
 
-Once authenticated, deploy the application:
+認証が完了したら、アプリケーションをデプロイします：
 
 ```bash
 npm run deploy
 ```
 
-This command will:
-1. Build the application (`npm run build`)
-2. Deploy to Cloudflare Workers (`wrangler deploy`)
-3. Output a Workers URL where your app is hosted
+このコマンドは以下を実行します：
+1. アプリケーションをビルド（`npm run build`）
+2. Cloudflare Workers にデプロイ（`wrangler deploy`）
+3. アプリがホストされている Workers URL を出力
 
-Expected output:
+期待される出力例：
 ```
 Total Upload: XX.XX KiB / gzip: XX.XX KiB
 Uploaded my-react-router-app (X.XX sec)
@@ -90,19 +90,19 @@ Deployed my-react-router-app triggers (X.XX sec)
 Current Version ID: <version-id>
 ```
 
-### Step 4: Verify Deployment
+### ステップ4: デプロイの確認
 
-1. Open the Workers URL provided in the deployment output
-2. Verify the ToDo app loads correctly
-3. Check that the mock todos are displayed
-4. Verify styling is applied correctly
-5. Open browser DevTools and check for console errors (there should be none)
+1. デプロイ出力に表示された Workers URL を開く
+2. ToDo アプリが正しく読み込まれることを確認
+3. モックの ToDo データが表示されることを確認
+4. スタイリングが正しく適用されていることを確認
+5. ブラウザの DevTools を開き、コンソールエラーがないことを確認（エラーは出ないはずです）
 
-## Deployment Configuration
+## デプロイ設定
 
-### Current Configuration
+### 現在の設定
 
-The app is configured in `wrangler.jsonc`:
+アプリは `wrangler.jsonc` で設定されています：
 
 ```jsonc
 {
@@ -118,138 +118,138 @@ The app is configured in `wrangler.jsonc`:
 }
 ```
 
-### What's Deployed
+### デプロイされる内容
 
-- **Worker Entry**: `workers/app.ts` - React Router request handler
-- **Client Assets**: Built React application (HTML, CSS, JS)
-- **SSR**: Server-side rendering enabled for fast initial page loads
+- **Worker エントリポイント**: `workers/app.ts` - React Router リクエストハンドラー
+- **クライアントアセット**: ビルドされた React アプリケーション（HTML、CSS、JS）
+- **SSR**: 高速な初期ページ読み込みのためにサーバーサイドレンダリングが有効
 
-### What's NOT Included (Current Scope)
+### 現在のスコープに含まれないもの
 
-- D1 Database connection (commented out - to be added in future issues)
-- Environment-specific configurations (dev/staging/prod)
-- CI/CD pipeline
+- D1 データベース接続（コメントアウト済み - 将来の issue で追加予定）
+- 環境別設定（dev/staging/prod）
+- CI/CD パイプライン
 
-## Performance Expectations
+## パフォーマンス目標
 
-Target metrics for this deployment:
+このデプロイメントの目標指標：
 
-- **Cold Start**: ~0ms (Cloudflare Workers advantage)
-- **Response Time**: <200ms for dynamic requests
-- **Global Distribution**: Available on 300+ edge locations
+- **コールドスタート**: 約0ms（Cloudflare Workers の利点）
+- **応答時間**: 動的リクエストで200ms未満
+- **グローバル配信**: 300以上のエッジロケーションで利用可能
 
-## Troubleshooting
+## トラブルシューティング
 
-### Authentication Issues
+### 認証に関する問題
 
-**Problem**: `wrangler login` doesn't open browser
+**問題**: `wrangler login` でブラウザが開かない
 
-**Solution**: Use API token method (Option B above)
+**解決策**: API トークン方式（上記オプションB）を使用
 
 ---
 
-**Problem**: "Not authenticated" error
+**問題**: "Not authenticated" エラー
 
-**Solution**:
+**解決策**:
 ```bash
-npx wrangler whoami  # Check authentication status
-npx wrangler login   # Re-authenticate
+npx wrangler whoami  # 認証状態を確認
+npx wrangler login   # 再認証
 ```
 
 ---
 
-**Problem**: Want to verify authentication credentials are saved
+**問題**: 認証情報が保存されているか確認したい
 
-**Solution**:
-Authentication credentials are stored in `~/.config/.wrangler/config/default.toml`. To verify:
+**解決策**:
+認証情報は `~/.config/.wrangler/config/default.toml` に保存されています。確認方法：
 ```bash
-# Check if config file exists
+# 設定ファイルが存在するか確認
 ls -la ~/.config/.wrangler/config/default.toml
 
-# Verify authentication status
+# 認証状態を確認
 npx wrangler whoami
 ```
 
-The config file contains OAuth tokens with automatic refresh capabilities. You should see your email and account information when running `wrangler whoami`.
+設定ファイルには自動更新機能付きの OAuth トークンが含まれています。`wrangler whoami` を実行すると、メールアドレスとアカウント情報が表示されるはずです。
 
-### Build Errors
+### ビルドエラー
 
-**Problem**: Build fails with type errors
+**問題**: 型エラーでビルドが失敗する
 
-**Solution**:
+**解決策**:
 ```bash
-npm run typecheck   # Identify type errors
-npm run cf-typegen  # Regenerate Cloudflare types
+npm run typecheck   # 型エラーを特定
+npm run cf-typegen  # Cloudflare の型を再生成
 ```
 
-### Deployment Errors
+### デプロイエラー
 
-**Problem**: "Worker name already exists"
+**問題**: "Worker name already exists" エラー
 
-**Solution**: Change the `name` field in `wrangler.jsonc` to a unique value
+**解決策**: `wrangler.jsonc` の `name` フィールドをユニークな値に変更
 
 ---
 
-**Problem**: Assets not loading (404 errors)
+**問題**: アセットが読み込まれない（404エラー）
 
-**Solution**: Ensure `npm run build` completed successfully before deploying
+**解決策**: デプロイ前に `npm run build` が正常に完了していることを確認
 
-## Resource Limits (Free Tier)
+## リソース制限（無料プラン）
 
-Cloudflare Workers Free Tier includes:
+Cloudflare Workers 無料プランには以下が含まれます：
 
-- **Requests**: 100,000 requests/day
-- **CPU Time**: 10ms per request
-- **Memory**: 128MB per request
-- **Script Size**: 1MB after compression
+- **リクエスト**: 100,000リクエスト/日
+- **CPU時間**: リクエストあたり10ms
+- **メモリ**: リクエストあたり128MB
+- **スクリプトサイズ**: 圧縮後1MB
 
-This is sufficient for development and small-scale production use.
+これは開発や小規模な本番運用には十分です。
 
-## Next Steps
+## 次のステップ
 
-After successful deployment, consider:
+デプロイが成功したら、以下を検討してください：
 
-1. **Custom Domain**: Add a custom domain in Cloudflare dashboard
-2. **D1 Database**: Integrate database for persistent todo storage (separate issue)
-3. **CI/CD**: Set up automated deployments with GitHub Actions (separate issue)
-4. **Monitoring**: Use Cloudflare Analytics to monitor usage and performance
+1. **カスタムドメイン**: Cloudflare ダッシュボードでカスタムドメインを追加
+2. **D1 データベース**: 永続的な ToDo ストレージのためにデータベースを統合（別 issue）
+3. **CI/CD**: GitHub Actions で自動デプロイを設定（別 issue）
+4. **モニタリング**: Cloudflare Analytics で使用状況とパフォーマンスを監視
 
-## Useful Commands
+## 便利なコマンド
 
 ```bash
-# Check Wrangler version
+# Wrangler のバージョン確認
 npx wrangler --version
 
-# View deployment list
+# デプロイ一覧を表示
 npx wrangler deployments list
 
-# View worker logs (tail)
+# Worker のログを表示（tail）
 npx wrangler tail
 
-# Delete deployment
+# デプロイを削除
 npx wrangler delete my-react-router-app
 
-# Check authentication status
+# 認証状態を確認
 npx wrangler whoami
 ```
 
-## Support
+## サポート
 
-- [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers)
-- [React Router v7 Cloudflare Guide](https://reactrouter.com/start/deploying/cloudflare)
-- [Wrangler CLI Reference](https://developers.cloudflare.com/workers/wrangler/commands)
+- [Cloudflare Workers ドキュメント](https://developers.cloudflare.com/workers)
+- [React Router v7 Cloudflare ガイド](https://reactrouter.com/start/deploying/cloudflare)
+- [Wrangler CLI リファレンス](https://developers.cloudflare.com/workers/wrangler/commands)
 
-## Security Notes
+## セキュリティに関する注意
 
-1. **Never commit**:
-   - `.wrangler/` directory in project root (already in .gitignore)
-   - `~/.config/.wrangler/` directory (contains authentication credentials)
-   - API tokens or secrets
-   - `.dev.vars` file (if created)
+1. **絶対にコミットしないもの**:
+   - プロジェクトルートの `.wrangler/` ディレクトリ（.gitignoreに既に追加済み）
+   - `~/.config/.wrangler/` ディレクトリ（認証情報を含む）
+   - API トークンやシークレット
+   - `.dev.vars` ファイル（作成した場合）
 
-2. **Use Wrangler Secrets** for sensitive data:
+2. **機密データには Wrangler Secrets を使用**:
    ```bash
    npx wrangler secret put SECRET_NAME
    ```
 
-3. **Enable Cloudflare WAF** in dashboard for production deployments
+3. **本番デプロイには Cloudflare WAF を有効化**: ダッシュボードで設定
