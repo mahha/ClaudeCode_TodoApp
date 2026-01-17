@@ -39,10 +39,20 @@ npx wrangler login
 This will:
 - Open your browser automatically
 - Prompt you to log in to Cloudflare
+- Display "Successfully logged in" message in the browser
 - Request permission for Wrangler to access your account
-- Store authentication credentials locally in `~/.wrangler/config/`
+- Store authentication credentials locally in `~/.config/.wrangler/config/default.toml`
 
 **No API token setup is required with this method.**
+
+**Verify authentication**:
+```bash
+npx wrangler whoami
+```
+
+This should display your account information and token permissions.
+
+**Note for devcontainer users**: Authentication works seamlessly in devcontainer environments. The `~/.config/.wrangler/` directory persists within the container, so you only need to authenticate once.
 
 #### Option B: API Token (Advanced)
 
@@ -146,6 +156,22 @@ npx wrangler whoami  # Check authentication status
 npx wrangler login   # Re-authenticate
 ```
 
+---
+
+**Problem**: Want to verify authentication credentials are saved
+
+**Solution**:
+Authentication credentials are stored in `~/.config/.wrangler/config/default.toml`. To verify:
+```bash
+# Check if config file exists
+ls -la ~/.config/.wrangler/config/default.toml
+
+# Verify authentication status
+npx wrangler whoami
+```
+
+The config file contains OAuth tokens with automatic refresh capabilities. You should see your email and account information when running `wrangler whoami`.
+
 ### Build Errors
 
 **Problem**: Build fails with type errors
@@ -216,7 +242,8 @@ npx wrangler whoami
 ## Security Notes
 
 1. **Never commit**:
-   - `.wrangler/` directory (already in .gitignore)
+   - `.wrangler/` directory in project root (already in .gitignore)
+   - `~/.config/.wrangler/` directory (contains authentication credentials)
    - API tokens or secrets
    - `.dev.vars` file (if created)
 
