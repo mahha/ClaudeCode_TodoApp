@@ -1,3 +1,5 @@
+import { useFetcher } from "react-router";
+
 interface TodoItemProps {
   id: number;
   title: string;
@@ -5,15 +7,31 @@ interface TodoItemProps {
   completed: boolean;
 }
 
-export function TodoItem({ title, description, completed }: TodoItemProps) {
+export function TodoItem({ id, title, description, completed }: TodoItemProps) {
+  const fetcher = useFetcher();
+
+  const handleToggle = () => {
+    fetcher.submit(
+      {},
+      {
+        method: 'PATCH',
+        action: `/api/todos/${id}/toggle`,
+      }
+    );
+  };
+
+  // Show optimistic UI while toggling
+  const isOptimisticallyToggled = fetcher.state !== 'idle';
+  const displayCompleted = isOptimisticallyToggled ? !completed : completed;
+
   return (
     <div className="border-b border-gray-200 py-4">
       <div className="flex items-start gap-3">
         <input
           type="checkbox"
-          checked={completed}
-          readOnly
-          className="mt-1 h-5 w-5 rounded border-2 border-black cursor-default"
+          checked={displayCompleted}
+          onChange={handleToggle}
+          className="mt-1 h-5 w-5 rounded border-2 border-black cursor-pointer"
           aria-label={`Mark "${title}" as ${completed ? 'incomplete' : 'complete'}`}
         />
         <div className="flex-1">

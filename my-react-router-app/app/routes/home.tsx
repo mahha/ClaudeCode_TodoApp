@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import { useLoaderData, Link } from "react-router";
 import { TodoList } from "../components/TodoList";
-import { getAllTodos } from "../lib/db.server";
+import { getTodosByStatus } from "../lib/db.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,14 +11,19 @@ export function meta({}: Route.MetaArgs) {
 }
 
 // Loader function to fetch todos from D1 database
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
   const db = context.cloudflare.env.DB;
-  const todos = await getAllTodos(db);
-  return { todos };
+  const url = new URL(request.url);
+  const tab = url.searchParams.get("tab") || "incomplete";
+  const activeTab: "incomplete" | "complete" = tab === "complete" ? "complete" : "incomplete";
+  const completed = activeTab === "complete";
+
+  const todos = await getTodosByStatus(db, completed);
+  return { todos, activeTab };
 }
 
 export default function Home() {
-  const { todos } = useLoaderData<typeof loader>();
+  const { todos, activeTab } = useLoaderData<typeof loader>();
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -29,7 +34,7 @@ export default function Home() {
         </h1>
 
         {/* Todo List - Data from D1 database */}
-        <TodoList todos={todos} />
+        <TodoList todos={todos} activeTab={activeTab} />
 
         {/* Add Task Button */}
         <Link

@@ -46,6 +46,14 @@ ENV DEVCONTAINER=true
 RUN mkdir -p /workspace /home/node/.claude && \
   chown -R node:node /workspace /home/node/.claude
 
+# Set up GitHub CLI configuration
+RUN mkdir -p /home/node/.config/gh && \
+  chown -R node:node /home/node/.config/gh
+
+# Set up Wrangler CLI configuration
+RUN mkdir -p /home/node/.config/wrangler && \
+chown -R node:node /home/node/.config/wrangler
+
 WORKDIR /workspace
 
 ARG GIT_DELTA_VERSION=0.18.2

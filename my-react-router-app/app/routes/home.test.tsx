@@ -31,10 +31,10 @@ const mockTodos = [
 
 describe("Home", () => {
   describe("loader", () => {
-    it("should fetch todos from D1", async () => {
-      const getAllTodosSpy = vi
-        .spyOn(dbServer, "getAllTodos")
-        .mockResolvedValue(mockTodos);
+    it("should fetch incomplete todos by default", async () => {
+      const getTodosByStatusSpy = vi
+        .spyOn(dbServer, "getTodosByStatus")
+        .mockResolvedValue(mockTodos.filter((t) => !t.completed));
 
       const mockDb = {} as any;
       const context = {
@@ -50,10 +50,41 @@ describe("Home", () => {
         request: new Request("http://localhost"),
       } as any);
 
-      expect(getAllTodosSpy).toHaveBeenCalledWith(mockDb);
-      expect(result).toEqual({ todos: mockTodos });
+      expect(getTodosByStatusSpy).toHaveBeenCalledWith(mockDb, false);
+      expect(result).toEqual({
+        todos: mockTodos.filter((t) => !t.completed),
+        activeTab: "incomplete",
+      });
 
-      getAllTodosSpy.mockRestore();
+      getTodosByStatusSpy.mockRestore();
+    });
+
+    it("should fetch complete todos when tab=complete", async () => {
+      const getTodosByStatusSpy = vi
+        .spyOn(dbServer, "getTodosByStatus")
+        .mockResolvedValue(mockTodos.filter((t) => t.completed));
+
+      const mockDb = {} as any;
+      const context = {
+        cloudflare: {
+          env: { DB: mockDb },
+          ctx: {} as any,
+        },
+      };
+
+      const result = await loader({
+        context,
+        params: {},
+        request: new Request("http://localhost?tab=complete"),
+      } as any);
+
+      expect(getTodosByStatusSpy).toHaveBeenCalledWith(mockDb, true);
+      expect(result).toEqual({
+        todos: mockTodos.filter((t) => t.completed),
+        activeTab: "complete",
+      });
+
+      getTodosByStatusSpy.mockRestore();
     });
   });
 
@@ -63,7 +94,13 @@ describe("Home", () => {
         const actual = await vi.importActual("react-router");
         return {
           ...actual,
-          useLoaderData: () => ({ todos: mockTodos }),
+          useLoaderData: () => ({ todos: mockTodos, activeTab: "incomplete" }),
+          useFetcher: () => ({
+            submit: vi.fn(),
+            state: 'idle',
+            data: undefined,
+            formData: undefined,
+          }),
           Link: ({ to, children, ...props }: any) => (
             <a href={to} {...props}>
               {children}
@@ -119,6 +156,14 @@ describe("Home", () => {
       expect(checkboxes[1]).toBeChecked();
       // Third todo is unchecked
       expect(checkboxes[2]).not.toBeChecked();
+    });
+
+    it("renders tabs for filtering todos", () => {
+      render(<Home />);
+      const incompleteTab = screen.getByRole("link", { name: "未完了" });
+      const completeTab = screen.getByRole("link", { name: "完了" });
+      expect(incompleteTab).toBeInTheDocument();
+      expect(completeTab).toBeInTheDocument();
     });
   });
 });
