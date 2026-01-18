@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { resetDatabase } from './helpers';
 
 test.describe('Create Todo Flow', () => {
   test.beforeEach(async ({ page }) => {
+    // Reset database to ensure clean state
+    await resetDatabase(page);
+
     // Navigate to the create page before each test
     await page.goto('/create');
   });
@@ -70,7 +74,7 @@ test.describe('Create Todo Flow', () => {
 
   test('should create todo with task name and notes', async ({ page }) => {
     const uniqueTaskName = `Complete Task ${Date.now()}`;
-    const notes = 'This task has both name and notes';
+    const notes = `Unique notes ${Date.now()}`;
 
     // Fill both fields
     await page.getByLabel(/task name/i).fill(uniqueTaskName);
@@ -145,8 +149,9 @@ test.describe('Create Todo Flow', () => {
   });
 
   test('should trim whitespace from task name', async ({ page }) => {
-    const taskName = '  Task with spaces  ';
-    const trimmedName = 'Task with spaces';
+    const timestamp = Date.now();
+    const taskName = `  Task with spaces ${timestamp}  `;
+    const trimmedName = `Task with spaces ${timestamp}`;
 
     // Fill with extra whitespace
     await page.getByLabel(/task name/i).fill(taskName);

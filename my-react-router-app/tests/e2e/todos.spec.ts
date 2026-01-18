@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { resetDatabase } from './helpers';
 
 test.describe('Todo List', () => {
+  test.beforeEach(async ({ page }) => {
+    // Reset database to ensure clean state
+    await resetDatabase(page);
+  });
+
   test('should display the home page with title', async ({ page }) => {
     await page.goto('/');
 
@@ -72,9 +78,10 @@ test.describe('Todo List', () => {
     await page.getByRole('link', { name: /add new task/i }).click();
     await expect(page).toHaveURL('/create');
 
-    // Generate unique task name to avoid conflicts
-    const uniqueTaskName = `Test Task ${Date.now()}`;
-    const taskDescription = 'This is a test description';
+    // Generate unique task name and description to avoid conflicts
+    const timestamp = Date.now();
+    const uniqueTaskName = `Test Task ${timestamp}`;
+    const taskDescription = `Test description ${timestamp}`;
 
     // Fill in the form
     await page.getByLabel(/task name/i).fill(uniqueTaskName);
