@@ -21,3 +21,8 @@ worker-configuration.d.ts
 # Reviews
 /reviews
 !reviews/.gitkeep
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
