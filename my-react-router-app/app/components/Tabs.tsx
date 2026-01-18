@@ -19,6 +19,7 @@ export function Tabs({ activeTab }: TabsProps) {
             <Link
               key={tab.id}
               to={`/?tab=${tab.searchParam}`}
+              viewTransition
               className={`
                 py-2 px-4 text-sm font-medium border-b-2 transition-colors
                 ${

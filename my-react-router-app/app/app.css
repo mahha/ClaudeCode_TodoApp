@@ -13,3 +13,31 @@ body {
     color-scheme: dark;
   }
 }
+
+/* View Transition API styles for smooth tab switching */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+/* Fade out animation for old view */
+::view-transition-old(root) {
+  animation-name: fade-out;
+}
+
+/* Fade in animation for new view */
+::view-transition-new(root) {
+  animation-name: fade-in;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
