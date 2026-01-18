@@ -1,3 +1,5 @@
+// Note: This file runs in Node.js environment (not Cloudflare Workers)
+// It's safe to use Node.js APIs like execSync here for test orchestration
 import { chromium, type FullConfig } from '@playwright/test';
 import { execSync } from 'child_process';
 
@@ -29,13 +31,24 @@ async function globalTeardown(config: FullConfig) {
     await browser.close();
   }
 
-  // Seed the database with initial data
+  // Seed the database with initial data (optional)
   console.log('🌱 Seeding database with initial data...');
   try {
-    execSync('npm run db:seed', { stdio: 'inherit' });
-    console.log('✅ Database seeded successfully');
+    // Check if the seed script exists before running
+    const packageJsonPath = new URL('../../package.json', import.meta.url);
+    const packageJson = await import(packageJsonPath.href, {
+      with: { type: 'json' }
+    });
+
+    if (packageJson.default.scripts?.['db:seed']) {
+      execSync('npm run db:seed', { stdio: 'inherit' });
+      console.log('✅ Database seeded successfully');
+    } else {
+      console.log('ℹ️  No db:seed script found, skipping seed');
+    }
   } catch (error) {
-    console.error('❌ Failed to seed database:', error);
+    // Seeding is optional - tests don't depend on seed data
+    console.log('ℹ️  Skipping database seed (not critical for tests):', (error as Error).message);
   }
 }
 
