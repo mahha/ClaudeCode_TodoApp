@@ -1,4 +1,4 @@
-import { action } from "../../app/routes/api.todos.$id.toggle";
+import { action } from "../../app/routes/api.todos.$id_.toggle";
 import * as dbServer from "../../app/lib/db.server";
 
 describe("API /api/todos/:id/toggle", () => {
