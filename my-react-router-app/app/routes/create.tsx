@@ -11,7 +11,10 @@ export async function action({ request, context }: Route.ActionArgs) {
 
   // Validation
   if (!title || title.trim() === "") {
-    return { error: "Task name is required" };
+    return {
+      error: "Task name is required",
+      values: { title, description },
+    };
   }
 
   try {
@@ -21,8 +24,17 @@ export async function action({ request, context }: Route.ActionArgs) {
     });
     return redirect("/");
   } catch (error) {
-    console.error("Failed to create todo:", error);
-    return { error: "Failed to create task. Please try again." };
+    // Structured logging with context
+    console.error("Failed to create todo:", {
+      error: error instanceof Error ? error.message : String(error),
+      title,
+      timestamp: new Date().toISOString(),
+    });
+
+    return {
+      error: "Failed to create task. Please try again.",
+      values: { title, description },
+    };
   }
 }
 
@@ -37,7 +49,11 @@ export default function CreateTask() {
         </h1>
 
         {actionData?.error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div
+            role="alert"
+            aria-live="polite"
+            className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg"
+          >
             <p className="text-red-600 text-sm">{actionData.error}</p>
           </div>
         )}
@@ -51,6 +67,7 @@ export default function CreateTask() {
               type="text"
               id="title"
               name="title"
+              defaultValue={actionData?.values?.title || ""}
               placeholder="Enter task name"
               className="bg-[#f2f2f0] rounded-[10px] h-[35px] px-[27px] text-[14px] text-black placeholder:text-[#5e5e60] focus:outline-none focus:ring-2 focus:ring-[#2920af]"
               required
@@ -65,6 +82,7 @@ export default function CreateTask() {
               type="text"
               id="description"
               name="description"
+              defaultValue={actionData?.values?.description || ""}
               placeholder="Add notes"
               className="bg-[#f2f2f0] rounded-[10px] h-[35px] px-[27px] text-[14px] text-black placeholder:text-[#5e5e60] focus:outline-none focus:ring-2 focus:ring-[#2920af]"
             />

@@ -27,7 +27,10 @@ describe("CreateTask", () => {
         params: {},
       } as any);
 
-      expect(result).toEqual({ error: "Task name is required" });
+      expect(result).toEqual({
+        error: "Task name is required",
+        values: { title: "", description: "Test description" },
+      });
     });
 
     it("should return error when title is only whitespace", async () => {
@@ -54,7 +57,10 @@ describe("CreateTask", () => {
         params: {},
       } as any);
 
-      expect(result).toEqual({ error: "Task name is required" });
+      expect(result).toEqual({
+        error: "Task name is required",
+        values: { title: "   ", description: "Test description" },
+      });
     });
 
     it("should create todo and redirect on success", async () => {
@@ -224,6 +230,7 @@ describe("CreateTask", () => {
 
       expect(result).toEqual({
         error: "Failed to create task. Please try again.",
+        values: { title: "Test Todo", description: "Test description" },
       });
 
       createTodoSpy.mockRestore();
