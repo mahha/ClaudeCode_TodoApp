@@ -11,8 +11,8 @@ test.describe('Todo Completion and Tabs', () => {
     await page.goto('/');
 
     // Check that both tabs are visible using exact match
-    const incompleteTab = page.getByRole('link', { name: '未完了', exact: true, exact: true });
-    const completeTab = page.getByRole('link', { name: '完了', exact: true, exact: true });
+    const incompleteTab = page.getByRole('link', { name: '未完了', exact: true });
+    const completeTab = page.getByRole('link', { name: '完了', exact: true });
 
     await expect(incompleteTab).toBeVisible();
     await expect(completeTab).toBeVisible();

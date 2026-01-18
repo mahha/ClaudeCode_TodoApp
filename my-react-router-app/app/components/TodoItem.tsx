@@ -1,5 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router";
-import { useState } from "react";
+import { useFetcher } from "react-router";
 
 interface TodoItemProps {
   id: number;
@@ -9,30 +8,21 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ id, title, description, completed }: TodoItemProps) {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [isToggling, setIsToggling] = useState(false);
+  const fetcher = useFetcher();
 
-  const handleToggle = async () => {
-    setIsToggling(true);
-    try {
-      const response = await fetch(`/api/todos/${id}/toggle`, {
-        method: "PATCH",
-      });
-
-      if (response.ok) {
-        // Reload the current page to refresh the todo list
-        const tab = searchParams.get("tab") || "incomplete";
-        navigate(`/?tab=${tab}`, { replace: true });
+  const handleToggle = () => {
+    fetcher.submit(
+      {},
+      {
+        method: 'PATCH',
+        action: `/api/todos/${id}/toggle`,
       }
-    } catch (error) {
-      console.error("Failed to toggle todo:", error);
-      setIsToggling(false);
-    }
+    );
   };
 
   // Show optimistic UI while toggling
-  const displayCompleted = isToggling ? !completed : completed;
+  const isOptimisticallyToggled = fetcher.state !== 'idle';
+  const displayCompleted = isOptimisticallyToggled ? !completed : completed;
 
   return (
     <div className="border-b border-gray-200 py-4">

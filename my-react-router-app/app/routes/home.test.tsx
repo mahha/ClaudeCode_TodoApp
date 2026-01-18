@@ -90,21 +90,17 @@ describe("Home", () => {
 
   describe("component", () => {
     beforeEach(() => {
-      // Mock fetch
-      globalThis.fetch = vi.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: async () => ({}),
-        } as Response)
-      );
-
       vi.mock("react-router", async () => {
         const actual = await vi.importActual("react-router");
         return {
           ...actual,
           useLoaderData: () => ({ todos: mockTodos, activeTab: "incomplete" }),
-          useNavigate: () => vi.fn(),
-          useSearchParams: () => [new URLSearchParams()],
+          useFetcher: () => ({
+            submit: vi.fn(),
+            state: 'idle',
+            data: undefined,
+            formData: undefined,
+          }),
           Link: ({ to, children, ...props }: any) => (
             <a href={to} {...props}>
               {children}

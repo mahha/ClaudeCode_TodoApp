@@ -1,27 +1,23 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TodoItem } from "./TodoItem";
 
-// Mock useNavigate and useSearchParams
-const mockNavigate = vi.fn();
-const mockSearchParams = new URLSearchParams();
-
-// Mock fetch
-globalThis.fetch = vi.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: async () => ({}),
-  } as Response)
-);
+// Mock useFetcher
+const mockSubmit = vi.fn();
+const mockFetcher = {
+  submit: mockSubmit,
+  state: 'idle' as 'idle' | 'submitting' | 'loading',
+  data: undefined,
+  formData: undefined,
+};
 
 vi.mock("react-router", () => ({
-  useNavigate: () => mockNavigate,
-  useSearchParams: () => [mockSearchParams],
+  useFetcher: () => mockFetcher,
 }));
 
 describe("TodoItem", () => {
   beforeEach(() => {
-    mockNavigate.mockClear();
-    vi.clearAllMocks();
+    mockSubmit.mockClear();
+    mockFetcher.state = 'idle';
   });
   it("renders title and description correctly", () => {
     render(
@@ -90,7 +86,7 @@ describe("TodoItem", () => {
     expect(checkbox).toBeInTheDocument();
   });
 
-  it("calls toggle API when checkbox is clicked", async () => {
+  it("calls fetcher.submit when checkbox is clicked", () => {
     render(
       <TodoItem
         id={42}
@@ -103,18 +99,16 @@ describe("TodoItem", () => {
     const checkbox = screen.getByRole("checkbox");
     fireEvent.click(checkbox);
 
-    // Wait for async operation
-    await new Promise(resolve => setTimeout(resolve, 0));
-
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      "/api/todos/42/toggle",
+    expect(mockSubmit).toHaveBeenCalledWith(
+      {},
       {
         method: "PATCH",
+        action: "/api/todos/42/toggle",
       }
     );
   });
 
-  it("checkbox is clickable (not readonly)", async () => {
+  it("checkbox is clickable (not readonly)", () => {
     render(
       <TodoItem
         id={1}
@@ -128,7 +122,24 @@ describe("TodoItem", () => {
     expect(checkbox).not.toHaveAttribute("readonly");
     // Should be able to trigger onChange
     fireEvent.click(checkbox);
-    await new Promise(resolve => setTimeout(resolve, 0));
-    expect(globalThis.fetch).toHaveBeenCalled();
+    expect(mockSubmit).toHaveBeenCalled();
+  });
+
+  it("shows optimistic UI while fetcher is submitting", () => {
+    // Set fetcher state to submitting
+    mockFetcher.state = 'submitting';
+
+    render(
+      <TodoItem
+        id={1}
+        title="Test Todo"
+        description="Test description"
+        completed={false}
+      />
+    );
+
+    // Should show opposite state optimistically
+    const checkbox = screen.getByRole("checkbox");
+    expect(checkbox).toBeChecked();
   });
 });

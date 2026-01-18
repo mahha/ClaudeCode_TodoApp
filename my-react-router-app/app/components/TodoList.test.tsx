@@ -8,17 +8,13 @@ vi.mock("react-router", () => ({
       {children}
     </a>
   ),
-  useNavigate: () => vi.fn(),
-  useSearchParams: () => [new URLSearchParams()],
+  useFetcher: () => ({
+    submit: vi.fn(),
+    state: 'idle',
+    data: undefined,
+    formData: undefined,
+  }),
 }));
-
-// Mock fetch
-globalThis.fetch = vi.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: async () => ({}),
-  } as Response)
-);
 
 describe("TodoList", () => {
   const mockTodos = [
