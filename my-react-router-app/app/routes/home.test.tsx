@@ -1,7 +1,86 @@
 import { render, screen } from "@testing-library/react";
-import Home from "./home";
+import Home, { loader } from "./home";
+import * as dbServer from "../lib/db.server";
 
 describe("Home", () => {
+  describe("loader", () => {
+    it("should fetch todos from D1", async () => {
+      const mockTodos = [
+        {
+          id: 1,
+          title: "Test Todo",
+          description: "Test",
+          completed: false,
+          created_at: 123,
+          updated_at: 123,
+        },
+      ];
+
+      const getAllTodosSpy = vi
+        .spyOn(dbServer, "getAllTodos")
+        .mockResolvedValue(mockTodos);
+
+      const mockDb = {} as any;
+      const context = {
+        cloudflare: {
+          env: { DB: mockDb },
+          ctx: {} as any,
+        },
+      };
+
+      const result = await loader({
+        context,
+        params: {},
+        request: new Request("http://localhost"),
+      } as any);
+
+      expect(getAllTodosSpy).toHaveBeenCalledWith(mockDb);
+      expect(result).toEqual({ todos: mockTodos });
+
+      getAllTodosSpy.mockRestore();
+    });
+  });
+
+  describe("component", () => {
+    beforeEach(() => {
+      vi.mock("react-router", () => ({
+        useLoaderData: () => ({
+          todos: [
+            {
+              id: 1,
+              title: "Grocery Shopping",
+              description: "Buy vegetables and fruits",
+              completed: false,
+            },
+            {
+              id: 2,
+              title: "Finish Report",
+              description: "Due by EOD",
+              completed: false,
+            },
+            {
+              id: 3,
+              title: "Call Plumber",
+              description: "Fix kitchen sink",
+              completed: false,
+            },
+            {
+              id: 4,
+              title: "Workout",
+              description: "1hour of cardio",
+              completed: false,
+            },
+            {
+              id: 5,
+              title: "Read Book",
+              description: "Chapter 5 of 'Atomic Habits'",
+              completed: false,
+            },
+          ],
+        }),
+      }));
+    });
+
   it("renders ToDo App header", () => {
     render(<Home />);
 
@@ -55,5 +134,6 @@ describe("Home", () => {
     checkboxes.forEach((checkbox) => {
       expect(checkbox).not.toBeChecked();
     });
+  });
   });
 });
