@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import { useLoaderData } from "react-router";
+import { useLoaderData, Link } from "react-router";
 import { TodoList } from "../components/TodoList";
 import { getAllTodos } from "../lib/db.server";
 
@@ -32,12 +32,13 @@ export default function Home() {
         <TodoList todos={todos} />
 
         {/* Add Task Button */}
-        <button
+        <Link
+          to="/create"
           className="fixed bottom-8 right-8 bg-[#2920af] text-white px-6 py-3 rounded-lg shadow-lg hover:bg-[#221a8f] transition-colors font-medium"
           aria-label="Add new task"
         >
           + Add Task
-        </button>
+        </Link>
       </div>
     </div>
   );
