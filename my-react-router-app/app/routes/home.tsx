@@ -1,5 +1,7 @@
 import type { Route } from "./+types/home";
+import { useLoaderData } from "react-router";
 import { TodoList } from "../components/TodoList";
+import { getAllTodos } from "../lib/db.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,41 +10,16 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// Mock data for initial implementation
-const MOCK_TODOS = [
-  {
-    id: 1,
-    title: "Grocery Shopping",
-    description: "Buy vegetables and fruits",
-    completed: false,
-  },
-  {
-    id: 2,
-    title: "Finish Report",
-    description: "Due by EOD",
-    completed: false,
-  },
-  {
-    id: 3,
-    title: "Call Plumber",
-    description: "Fix kitchen sink",
-    completed: false,
-  },
-  {
-    id: 4,
-    title: "Workout",
-    description: "1hour of cardio",
-    completed: false,
-  },
-  {
-    id: 5,
-    title: "Read Book",
-    description: "Chapter 5 of 'Atomic Habits'",
-    completed: false,
-  },
-];
+// Loader function to fetch todos from D1 database
+export async function loader({ context }: Route.LoaderArgs) {
+  const db = context.cloudflare.env.DB;
+  const todos = await getAllTodos(db);
+  return { todos };
+}
 
 export default function Home() {
+  const { todos } = useLoaderData<typeof loader>();
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
@@ -51,8 +28,8 @@ export default function Home() {
           ToDo App
         </h1>
 
-        {/* Todo List */}
-        <TodoList todos={MOCK_TODOS} />
+        {/* Todo List - Data from D1 database */}
+        <TodoList todos={todos} />
 
         {/* Add Task Button */}
         <button
