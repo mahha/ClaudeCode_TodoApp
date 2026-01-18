@@ -16,6 +16,10 @@ describe("API /api/todos", () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe("GET /api/todos", () => {
     it("should return all todos", async () => {
       const mockTodos = [

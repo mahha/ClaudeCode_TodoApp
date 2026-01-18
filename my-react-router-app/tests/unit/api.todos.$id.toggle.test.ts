@@ -16,6 +16,10 @@ describe("API /api/todos/:id/toggle", () => {
     vi.clearAllMocks();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe("PATCH /api/todos/:id/toggle", () => {
     it("should toggle todo completed status", async () => {
       const toggledTodo = {

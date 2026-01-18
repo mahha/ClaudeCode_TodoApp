@@ -13,13 +13,21 @@ export async function action({ request, params, context }: ActionFunctionArgs) {
   }
 
   if (request.method === "PATCH") {
-    const todo = await toggleTodoCompleted(db, id);
+    try {
+      const todo = await toggleTodoCompleted(db, id);
 
-    if (!todo) {
-      return Response.json({ error: "Todo not found" }, { status: 404 });
+      if (!todo) {
+        return Response.json({ error: "Todo not found" }, { status: 404 });
+      }
+
+      return Response.json({ todo });
+    } catch (error) {
+      console.error("Failed to toggle todo:", error);
+      return Response.json(
+        { error: "Failed to toggle todo" },
+        { status: 500 }
+      );
     }
-
-    return Response.json({ todo });
   }
 
   return Response.json({ error: "Method not allowed" }, { status: 405 });
